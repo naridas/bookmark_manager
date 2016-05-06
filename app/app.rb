@@ -53,8 +53,7 @@ class BookmarkManager < Sinatra::Base
   post '/users' do
     @user = User.new(password:params[:password], password_confirmation:params[:password_confirmation], email:params[:email])
     if @user.save
-      session[:user_id] = @user.id
-      redirect '/links'
+      redirect '/sessions/new'
     else
       #alternatively set flash[:errors] to @user.errors.full_messages
       flash.now[:errors] = []
@@ -65,7 +64,28 @@ class BookmarkManager < Sinatra::Base
     end
   end
 
+  get '/sessions/new' do
+    erb :'sessions/new'
+  end
 
+  post '/sessions' do
+  # @user = User.first(email:params[:email])
+  # if @user.authenticated?(params[:password])
+  #   session[:user_id] = @user.id
+  #   redirect to('/links')
+  # else
+  #   flash.now[:errors] = ['The email or password is incorrect']
+  #   erb :'sessions/new'
+  # end
+  user = User.authenticate(params[:email], params[:password])
+    if user
+      session[:user_id] = user.id
+      redirect to('/links')
+    else
+      flash.now[:errors] = [['The email or password is incorrect']]
+      erb :'sessions/new'
+    end
+  end
   # start the server if ruby file executed directly
   run! if app_file == $0
 end

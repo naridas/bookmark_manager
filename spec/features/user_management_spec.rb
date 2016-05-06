@@ -1,7 +1,6 @@
 feature 'user sign up' do
   scenario 'I can sign up as a new user' do
     sign_up
-    expect(page).to have_content('Welcome, alice@example.com')
     expect(User.first.email).to eq('alice@example.com')
   end
   scenario 'confirmation of password' do
